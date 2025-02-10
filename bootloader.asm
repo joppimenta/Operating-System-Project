@@ -16,7 +16,7 @@ start:
     mov ss, ax
     mov sp, 0x7C00
 
-    mov byte [boot_drive], 0x80 ; Indica dispositivo de boot
+    mov byte [boot_drive], 0x80 ; Indica dispositivo de boot (HD)
 
     ; Mensagem de depuração ao iniciar o bootloader
     mov si, msg1
@@ -69,7 +69,7 @@ print_string:
 .done:
     ret
 
-read_sectors:
+read_sectors: ; Realiza leitura do local no disco onde esta o kernel, e armazena na memoria 0x1000
     pusha ; Salva o valor atual dos registradores
     xor ax, ax ; Zera o registrador AX
     cld ;Limpa flag de direcao
