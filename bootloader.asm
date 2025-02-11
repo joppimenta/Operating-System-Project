@@ -1,6 +1,32 @@
 BITS 16
 ORG 0x7C00
 
+JMP SHORT start
+NOP
+
+; FAT 12 HEADER
+bdb_oem:                 DB 'MSWIN4.1'
+bdb_bytes_per_sector:    DW 512
+bdb_sectors_per_cluster: DB 1
+bdb_reserved_sectors:    DW 1
+bdb_fat_count:           DB 2
+bdb_dir_entries_count:   DW 0e0h
+bdb_total_sectors:       DW 20480
+bdb_media_descriptor_type: DB 0f0h
+bdb_sectors_per_fat:     DW 9
+bdb_sectors_per_track:   DW 18
+bdb_heads:               DW 2
+bdb_hidden_sectors:      DD 0
+bdb_large_sector_count:  DD 0
+
+ebr_drive_number: DB 0
+                  DB 0
+ebr_signature:    DB 29h
+ebr_volume_id:    DB 12h,34h,56h,78h
+ebr_volume_label: DB 'MyOS       '
+ebr_system_id:    DB 'FAT12   '
+;;;;;;;;;
+
 start:
     cli ; Limpa a flag de interrupcoes - Impede que interrupcoes afetem o processo de boot
     cld ; Limpa flag de direcao
