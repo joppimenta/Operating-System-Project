@@ -40,17 +40,29 @@ print_str:
     ret
 
 terminal_loop:
-    ; Loop principal do terminal
+    mov si, buffer   ; Ponteiro para armazenar entrada
 .terminal:
-    call read_char    ; Ler caractere do teclado
-    cmp al, 0x0D      ; Verificar se é o caractere de Enter (0x0D)
-    je .new_line      ; Se for Enter, pular para a nova linha
-    call print_char   ; Exibir caractere na tela
-    jmp .terminal     ; Repetir
+    mov byte [si], 0 ; Zerar buffer
+    call read_char   ; Ler caractere do teclado
+    cmp al, 0x0D    ; Verificar se é o caractere de Enter (0x0D)
+    je .check_command ; Se for Enter, verificar comando
+    mov [si], al    ; Armazena caractere no buffer
+    inc si          ; Avança ponteiro
+    call print_char ; Exibir caractere na tela
+    jmp .terminal   ; Repetir
 
-.new_line:
-    call print_newline; Pular para a nova linha
-    jmp .terminal     ; Repetir
+.check_command:
+    mov si, buffer   ; Reiniciar ponteiro do buffer
+    cmp byte [si], 'r'  ; Verifica se primeiro caractere é 'r'
+    jne .continue    ; Se não, continuar
+    inc si           ; Avança ponteiro
+    cmp byte [si], 0 ; Verifica se buffer contém apenas 'r'
+    jne .continue    ; Se houver mais caracteres, continuar
+    call restart     ; Se for "r" sozinho, reinicia
+
+.continue:
+    call print_newline ; Caso contrário, apenas pula a linha
+    jmp .terminal      ; Repetir
 
 read_char:
     ; Ler um caractere do teclado
@@ -72,6 +84,14 @@ print_newline:
     call print_char
     ret
 
+restart:
+    ; Reiniciar o computador
+    mov ax, 0x0000    ; Resetar segmento
+    mov es, ax
+    mov dx, 0x1234    ; Valor arbitrário para evitar otimizações
+    int 0x19          ; Interrupção de reinicialização do BIOS
+    ret
+
 ; Dados
 mensagem db "Bem-vindo ao meu Sistema Operacional", 0
-ter db ">> ", 0
+buffer db 2, 0  ; Buffer para armazenar entrada
