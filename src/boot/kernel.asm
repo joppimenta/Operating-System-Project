@@ -16,22 +16,61 @@ main:
     mov ax, 0x0720  ; AH = 0x07 (cor: cinza claro sobre fundo preto), AL = 0x20 (espaço em branco)
     rep stosw       ; Preenche a tela com espaços em branco
 
-    ; Exibir a mensagem "MEU SISTEMA OPERACIONAL"
-    mov si, mensagem  ; SI aponta para a mensagem
-    mov di, (12 * 80 + 30) * 2  ; Posição centralizada (linha 12, coluna 30)
-    mov ah, 0x0E      ; AH = 0x0E (função de imprimir caractere do BIOS)
+    mov si, mensagem
+    call print_str
 
-.print_loop:
-    lodsb             ; Carrega o próximo caractere da mensagem em AL
-    test al, al       ; Verifica se é o fim da string (AL = 0)
-    jz .halt          ; Se for o fim, termina
-    stosw             ; Escreve o caractere na memória de vídeo (AL = caractere, AH = atributo)
-    jmp .print_loop   ; Repete para o próximo caractere
+    call print_newline
 
-.halt:
+    ; Iniciar loop do terminal
+    call terminal_loop
+
     ; Parar a CPU
     cli
     hlt
 
+print_str:
+    mov ah, 0x0E      ; AH = 0x0E (função de imprimir caractere do BIOS)
+.print_loop:
+    lodsb             ; Carrega o próximo caractere da mensagem em AL
+    test al, al       ; Verifica se é o fim da string (AL = 0)
+    jz .done          ; Se for o fim, termina
+    stosw             ; Escreve o caractere na memória de vídeo (AL = caractere, AH = atributo)
+    jmp .print_loop   ; Repete para o próximo caractere
+.done:
+    ret
+
+terminal_loop:
+    ; Loop principal do terminal
+.terminal:
+    call read_char    ; Ler caractere do teclado
+    cmp al, 0x0D      ; Verificar se é o caractere de Enter (0x0D)
+    je .new_line      ; Se for Enter, pular para a nova linha
+    call print_char   ; Exibir caractere na tela
+    jmp .terminal     ; Repetir
+
+.new_line:
+    call print_newline; Pular para a nova linha
+    jmp .terminal     ; Repetir
+
+read_char:
+    ; Ler um caractere do teclado
+    mov ah, 0x00      ; Função para ler caractere do teclado
+    int 0x16          ; Interrupção de BIOS para leitura do teclado
+    ret
+
+print_char:
+    ; Exibir o caractere lido na tela
+    mov ah, 0x0E      ; Função de imprimir caractere do BIOS
+    int 0x10          ; Interrupção de vídeo
+    ret
+
+print_newline:
+    ; Exibir nova linha na tela
+    mov al, 0x0D      ; Caractere de retorno de carro
+    call print_char
+    mov al, 0x0A      ; Caractere de nova linha
+    call print_char
+    ret
+
 ; Dados
-mensagem db 'MEU SISTEMA OPERACIONAL', 0
+mensagem db "SO", 0
