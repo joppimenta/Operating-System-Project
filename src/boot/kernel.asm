@@ -34,7 +34,7 @@ print_str:
     lodsb             ; Carrega o próximo caractere da mensagem em AL
     test al, al       ; Verifica se é o fim da string (AL = 0)
     jz .done          ; Se for o fim, termina
-    stosw             ; Escreve o caractere na memória de vídeo (AL = caractere, AH = atributo)
+    int 0x10
     jmp .print_loop   ; Repete para o próximo caractere
 .done:
     ret
@@ -73,4 +73,5 @@ print_newline:
     ret
 
 ; Dados
-mensagem db "SO", 0
+mensagem db "Bem-vindo ao meu Sistema Operacional", 0
+ter db ">> ", 0
