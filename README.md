@@ -21,16 +21,18 @@ Este projeto consiste na implementação de um sistema operacional minimalista, 
 /Projeto-SO
 ├── src/
 │   ├── boot/
-│   │   ├── loader.asm      # Bootloader (carrega o kernel)
-│   │   ├── kernel.asm      # Código principal do sistema operacional
-│   │   ├── fat12header.asm # Configuração do FAT12 (BPB)
-│   │   ├── puts.asm        # Função para exibir strings na tela
-│   │   ├── save_and_restore_registers.asm # Macros para salvar e restaurar registradores
-├── build/                   # Diretório onde os binários são gerados
-├── scripts/
-│   ├── make.sh              # Script para compilar e criar imagem de disco
-│   ├── run.sh               # Script para executar o sistema no QEMU
-├── README.md                # Documentação do projeto
+│   │   ├── kernel.asm     # Código principal do sistema operacional
+│   │   ├── loader.asm     # Bootloader (carrega o kernel)
+│   ├── lib/
+│   │   ├── dev/
+│   │   │   ├── fat12header.asm # Configuração do FAT12 (BPB)
+│   │   ├── stdio/
+│   │   │   ├── puts.asm        # Função para exibir strings na tela
+│   │   ├── utils/
+│   │   │   ├── save_and_restore_registers.asm # Macros para salvar e restaurar registradores
+├── make             # Script para compilar e criar imagem de disco
+├── run              # Script para executar o sistema no QEMU
+├── README.md            # Documentação do projeto
 ```
 
 ## Compilação e Execução
@@ -49,7 +51,7 @@ sudo apt install nasm mtools qemu-system-x86
 Para compilar o projeto e gerar a imagem de disco, execute o seguinte comando:
 
 ```
-bash scripts/make.sh
+bash make
 ```
 
 Este script realiza as seguintes ações:
@@ -72,7 +74,7 @@ KERNEL   BIN     1024  2025-02-19  12:34
 Para executar o sistema operacional, utilize o seguinte comando:
 
 ```
-bash scripts/run.sh
+bash run
 ```
 
 Este comando verifica a existência de disk.img e inicia o QEMU com a imagem montada como disquete.
