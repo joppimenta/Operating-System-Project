@@ -19,6 +19,7 @@ Este projeto consiste na implementação de um sistema operacional minimalista, 
 
 ```plaintext
 /Projeto-SO
+├── build/                 # Diretório onde os binários são gerados
 ├── src/
 │   ├── boot/
 │   │   ├── kernel.asm     # Código principal do sistema operacional
@@ -32,7 +33,7 @@ Este projeto consiste na implementação de um sistema operacional minimalista, 
 │   │   │   ├── save_and_restore_registers.asm # Macros para salvar e restaurar registradores
 ├── make             # Script para compilar e criar imagem de disco
 ├── run              # Script para executar o sistema no QEMU
-├── README.md            # Documentação do projeto
+├── README.md        # Documentação do projeto
 ```
 
 ## Compilação e Execução
