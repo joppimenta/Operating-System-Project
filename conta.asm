@@ -1,5 +1,3 @@
-org 100h  ; Programa .COM (DOS)
-
 section .bss
     count resb 1  ; Reserva 1 byte para o contador
 

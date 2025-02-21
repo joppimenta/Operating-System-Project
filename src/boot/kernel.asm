@@ -29,16 +29,6 @@ EBR_SYS     db  'FAT12   '      ; 8 bytes  - Sistema de particionamento
 
 main:
 
-    cli
-    ; Definir modo de texto 80x25 (16 cores)
-    xor ax, ax
-    xor bx, bx
-    xor cx, cx
-    xor dx, dx
-    xor si, si
-    xor di, di
-    xor bp, bp
-
     mov ax, 0x0003  ; Modo de texto 80x25
     int 0x10        ; Chamada de vídeo do BIOS
 
@@ -59,7 +49,7 @@ main:
     call print_newline
 
     ;  Carregar GAME.BIN antes de iniciar o terminal
-    call load_game
+    ;call load_game
 
     ; Iniciar loop do terminal
     call terminal_loop
@@ -142,7 +132,6 @@ file_found:
     mov bx, game_ls           ; Redefine segmento de dados para 0x3000:0x0000,
     mov es, bx                  ; que é onde os bytes do arquivo serão escritos
     mov bx, game_lo           ; na memória (endereço incial: 0x30000).
-
 
 load_game_loop:
     mov ax, [game_cluster]  ; Obtém cluster atual
@@ -281,11 +270,20 @@ terminal_loop:
 .check_command:
     mov si, buffer
     cmp byte [si], 'r'  
-    jne .continue
+    jne .check_g
     inc si
     cmp byte [si], 0
     jne .continue
     call restart
+
+.check_g:
+    mov si, buffer
+    cmp byte [si], 'g'  
+    jne .continue
+    inc si
+    cmp byte [si], 0
+    jne .continue
+    call load_game
 
 .continue:
     call print_newline
@@ -310,39 +308,6 @@ print_newline:
     mov al, 0x0A
     call print_char
     ret
-  
-print_hex:
-    push ax
-    push bx
-    push cx
-    push dx
-
-    mov cx, 4            ; Precisamos imprimir 4 dígitos (16 bits = 4 nibbles)
-    mov bx, di           ; Copia DI para BX
-
-.hex_loop:
-    rol bx, 4            ; Rotaciona 4 bits para a esquerda
-    mov al, bl           ; Move os 4 bits menos significativos para AL
-    and al, 0x0F         ; Mascara apenas os últimos 4 bits
-
-    ; Converter para caractere ASCII
-    add al, '0'          ; Converte para '0'-'9'
-    cmp al, '9'          
-    jbe .print           
-    add al, 7            ; Ajuste para 'A'-'F'
-
-.print:
-    mov ah, 0x0E         ; Função de impressão do BIOS (int 10h)
-    int 0x10             ; Imprime o caractere
-
-    loop .hex_loop       ; Repetir para os próximos 4 bits
-
-    pop dx
-    pop cx
-    pop bx
-    pop ax
-    ret
-
 
 halt:
     cli                 ; Limpa a flag de interrupções
@@ -379,10 +344,10 @@ hex_digits db '0123456789ABCDEF'
 
 err_disk_read       db `Disk error!\r\nPress any key to reboot...`
 
-game_bin            db 'CONTA   BIN'   ; Nome do arquivo
+game_bin            db 'GAME    BIN'   ; Nome do arquivo
 game_cluster dw 0           ; Primeiro cluster
-game_ls equ 0x3000         ; Segmento de carga
+game_ls equ 0x4000         ; Segmento de carga
 game_lo equ 0x0000             ; Offset de carga
-game_nf           db `CONTA.BIN not fount!\r\n`
+game_nf           db `GAME.BIN not fount!\r\n`
 
 buffer_as:

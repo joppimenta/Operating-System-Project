@@ -349,6 +349,7 @@ err_disk_read       db `Disk error!\r\nPress any key to reboot...`
 err_disk_read_len   equ $ - err_disk_read
 
 kernel_bin          db 'KERNEL  BIN'  ; nome do arquivo do kernel
+;kernel_bin          db 'GAME    BIN'
 kernel_cluster      dw 0              ; 2 bytes iniciados com zeros
 kernel_ls           equ 0x2000        ; Load segmement
 kernel_lo           equ 0             ; load offset
