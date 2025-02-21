@@ -22,6 +22,8 @@ nasm src/boot/kernel.asm -f bin -o build/kernel.bin || exit
 # Image build
 # -----------------------------------------------------------------------------
 
+nasm conta.asm -f bin -o build/conta.bin || exit
+
 # Criar arquivo de 1.44MB...
 dd if=/dev/zero of=build/disk.img bs=512 count=2880
 
@@ -33,6 +35,8 @@ dd if=build/loader.bin of=build/disk.img conv=notrunc
 
 # Copiar arquivo do kernel para o segundo setor sem montar o sistema de arquivos...
 mcopy -i build/disk.img build/kernel.bin "::kernel.bin"
+
+mcopy -i build/disk.img build/conta.bin "::conta.bin"
 
 # Listar arquivos da imagem...
 mdir -i build/disk.img
